@@ -1,14 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var async = require('async');
 var _ = require('lodash');
-var key = require('../config/index.js');
+var config = require('../config/index.js');
+var data ={
+    events:[]
+};
 
-var get_data = function (url, callback) {
-    var data ={
-        events: []
-    };
-
+var get_data = function (url,type, callback) {
+    // var events = [];
     request.get({
             url: url
         }, function (err, res, body) {
@@ -18,23 +19,31 @@ var get_data = function (url, callback) {
             }
         body = JSON.parse(body);
         // console.log(body.results.geometry);
-            for(value in body.results) {
+            for(i =0; i<=4; i++) {
                 // console.log(body.results[value]);
-                data.events.push({"name":body.results[value].name,"lat":body.results[value].geometry.location.lat,"lon":body.results[value].geometry.location.lng});
+                data.events.push({"name":body.results[i].name,"lat":body.results[i].geometry.location.lat,"lon":body.results[i].geometry.location.lng,"type":type});
                 // console.log(data);
             }
-            callback(data);
+        callback();
         }
     );
 }
-router.get('/:lat/:lon', function(req, res, next) {
+router.post('/', function(req, res) {
 
-    var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+req.params.lat+','+req.params.lon+'&radius=10000&types=hindu_temple&key='+key.google_key;
-    console.log(url);
+    console.log(req.body.lat,' ',req.body.lon,' ',req.body.types);
+    async.forEachOf(req.body.types, function (value, key, cb) {
+        var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+req.body.lat+','+req.body.lon+'&radius=10000&types='+value+'&key='+config.google_key;
+        console.log(url);
+        get_data(url, value, function () {
+            cb();
+        });
+    }, function (err) {
+        if (err) console.error(err.message);
+        var result = _.cloneDeep(data);
+        data.events = [];
+        res.json(result);
 
-    get_data(url, function (data) {
-      res.json(data);
-  });
+    });
 
 });
 
