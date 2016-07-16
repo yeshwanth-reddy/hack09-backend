@@ -19,12 +19,24 @@ var get_data = function (url,type, callback) {
             }
         body = JSON.parse(body);
         // console.log(body.results.geometry);
-            for(i =0; i<=4; i++) {
-                // console.log(body.results[value]);
-                data.events.push({"name":body.results[i].name,"lat":body.results[i].geometry.location.lat,"lon":body.results[i].geometry.location.lng,"type":type});
+        if (body.status === "ZERO_RESULTS"){
+            callback();
+        } else {
+            for (i in body.results) {
+                if (i === 5) {
+                    break;
+                }
+                console.log('results', body.results);
+                data.events.push({
+                    "name": body.results[i].name,
+                    "lat": body.results[i].geometry.location.lat,
+                    "lon": body.results[i].geometry.location.lng,
+                    "type": type
+                });
                 // console.log(data);
             }
-        callback();
+            callback();
+        }
         }
     );
 }
