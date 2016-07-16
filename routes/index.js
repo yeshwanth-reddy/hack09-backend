@@ -23,7 +23,7 @@ var get_data = function (url,type, callback) {
             callback();
         } else {
             for (i in body.results) {
-                if (i === 5) {
+                if (i == 5) {
                     break;
                 }
                 console.log('results', body.results);
