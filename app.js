@@ -7,7 +7,8 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var notif = require('./routes/notif');
-var eventBrite = require('./routes/events')
+var eventBrite = require('./routes/events');
+var booking = require('./routes/bookings');
 var app = express();
 
 // view engine setup
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/places', routes);
 app.use('/gcm', notif);
 app.use('/events', eventBrite);
+app.use('/booking', booking);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

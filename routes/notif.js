@@ -37,10 +37,11 @@ router.get('/devices',function(req,res) {
 });
 
 router.post('/send',function(req,res){
+    var title = req.body.title;
     var message = req.body.message;
     var registrationId = req.body.registrationId;
 
-    sendFunction.sendMessage(message,registrationId,function(result){
+    sendFunction.sendMessage(message, title, registrationId,function(result){
         res.json(result);
 
     });
