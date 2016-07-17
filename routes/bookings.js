@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
-var config = require('../config/index.js');
+
+var registerFunction = require('../lib/register');
+var sendFunction = require('../lib/send-message');
 
 var upcomingBookingStatusCodes = [1,2,3,4,5,6,7,8,9,10,11,12,13,21,23,32,35,24,26,27,33];
 
@@ -34,14 +36,19 @@ var get_data = function (url, callback) {
         });
 }
 
-router.get('/', function(req, res) {
-
+router.post('/', function(req, res) {
+    var deviceID = req.body.deviceID;
     // console.log(req.body.lat,' ',req.body.lon);
-
+    registerFunction.register( "test-hack09", "test-hack09", deviceID, function(result) {
+        sendFunction.sendMessage("Welcome to Stayzilla Postbooking service!", "Hey there..", deviceID,function(result){
+            console.log(result);
+        });
+        
+    });
     var url = 'https://search.stayzilla.com/v1/json/bookinggetall/1467189693159hpAbSgsAxv61QfngAM8TmBYb6Sz';
     console.log(url);
-    get_data(url, function (events) {
-        res.json(events);
+    get_data(url, function (bookings) {
+        res.json(bookings);
     });
 });
 
